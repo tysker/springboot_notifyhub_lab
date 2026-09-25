@@ -2,53 +2,61 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.1.1</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
+
+    <!-- Project Information -->
     <groupId>io.github.tysker</groupId>
     <artifactId>notifyhub</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <!-- Information   -->
     <name>notifyhub</name>
-    <description>notifyhub</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
+    <description>root module for notifyhub</description>
+
+    <!-- Project Developers -->
     <developers>
-        <developer/>
+        <developer>
+            <name>Jörg O.</name>
+            <email>tysker@example.com</email>
+        </developer>
     </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+
+    <!-- Project Modules -->
+    <modules>
+        <module>notifyhub-api</module>
+        <module>notifyhub-app</module>
+        <module>notifyhub-core</module>
+    </modules>
+
+    <!-- Project Properties -->
     <properties>
         <java.version>21</java.version>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <!-- Project Dependencies -->
+    <dependencyManagement>
+        <dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+            <dependency>
+                <groupId>io.github.tysker</groupId>
+                <artifactId>notifyhub-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.tysker</groupId>
+                <artifactId>notifyhub-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
 </project>
