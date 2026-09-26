@@ -30,9 +30,9 @@
 
     <!-- Project Modules -->
     <modules>
-        <module>notifyhub-api</module>
         <module>notifyhub-app</module>
         <module>notifyhub-core</module>
+        <module>notifyhub-api</module>
     </modules>
 
     <!-- Project Properties -->
