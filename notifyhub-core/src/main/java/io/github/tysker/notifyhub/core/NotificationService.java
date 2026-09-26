@@ -1,14 +1,12 @@
-package io.github.tysker.notifyhubcore;
+package io.github.tysker.notifyhub.core;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j(topic = "notifyhub")
+@Slf4j(topic = "NotificationService")
 @Service
 public class NotificationService {
 
-    @Autowired
     public NotificationService() {
         log.info("init() --> NotificationService initialized");
     }

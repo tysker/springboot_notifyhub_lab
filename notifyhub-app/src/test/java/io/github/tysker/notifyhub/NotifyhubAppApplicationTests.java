@@ -1,4 +1,4 @@
-package io.github.tysker.notifyhubapp;
+package io.github.tysker.notifyhub;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
