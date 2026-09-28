@@ -11,7 +11,7 @@ public class SlackChannel implements NotificationChannel {
 
     @Override
     public String name() {
-        return "Slack";
+        return "slack";
     }
 
     @Override
