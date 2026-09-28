@@ -11,7 +11,7 @@ public class SmsChannel implements NotificationChannel {
 
     @Override
     public String name() {
-        return "SMS";
+        return "sms";
     }
 
     @Override
