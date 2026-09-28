@@ -16,8 +16,8 @@ public class NotificationService {
 
     private final Map<String, NotificationChannel> channelMap;
 
-    public NotificationService(List<NotificationChannel> channels) {
-        this.channelMap = channels
+    public NotificationService(List<NotificationChannel> channelList) {
+        this.channelMap = channelList
                 .stream()
                 .collect(Collectors.toMap(
                         NotificationChannel::name,
