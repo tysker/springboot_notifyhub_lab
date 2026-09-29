@@ -1,5 +1,6 @@
 package io.github.tysker.notifyhub.core.config;
 
+import io.github.tysker.notifyhub.core.FallbackChannel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,4 +17,10 @@ public class NotifyHubConfig {
     public Clock clock() {
         return Clock.systemDefaultZone();
     }
+
+    @Bean
+    public FallbackChannel fallbackChannel() {
+        return new FallbackChannel();
+    }
+
 }
