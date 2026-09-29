@@ -4,9 +4,11 @@ import io.github.tysker.notifyhub.api.Notification;
 import io.github.tysker.notifyhub.api.NotificationChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Slf4j
+@ConditionalOnProperty(prefix = "notifyhub.sms", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Component
 public class SmsChannel implements NotificationChannel {
 
