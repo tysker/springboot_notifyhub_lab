@@ -2,6 +2,8 @@ package io.github.tysker.notifyhub.core;
 
 import io.github.tysker.notifyhub.api.Notification;
 import io.github.tysker.notifyhub.api.NotificationChannel;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
@@ -21,6 +23,16 @@ public class EmailChannel implements NotificationChannel {
 
     public EmailChannel(@Value("${notifyhub.email.sender:default@example.com}") String sender) {
         this.sender = sender;
+    }
+
+    @PostConstruct
+    public void connect() {
+        log.info("[EMAIL] Connecting to SMTP server as {}", sender);
+    }
+
+    @PreDestroy
+    public void disconnect() {
+        log.info("[EMAIL] Disconnecting from SMTP server");
     }
 
     @Override
