@@ -55,8 +55,9 @@ public class NotificationService {
             throw new ChannelException("Channel not found: " + channelName);
         }
 
-        log.info("Sending via {} at {}", channelName, Instant.now(clock));
+        Instant now = Instant.now(clock);
+        log.info("Sending via {} at {}", channelName, now);
         channel.send(notification);
-        publisher.publishEvent(new NotificationSentEvent(notification, channelName, Instant.now(clock)));
+        publisher.publishEvent(new NotificationSentEvent(notification, channelName, now));
     }
 }
