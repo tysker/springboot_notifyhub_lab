@@ -2,23 +2,45 @@ package io.github.tysker.notifyhub.core;
 
 import io.github.tysker.notifyhub.api.Notification;
 import io.github.tysker.notifyhub.api.NotificationChannel;
-import lombok.RequiredArgsConstructor;
+import io.github.tysker.notifyhub.core.config.ChannelProperties;
+import io.github.tysker.notifyhub.core.exceptions.ChannelException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Slf4j
 @Service
 public class NotificationService {
 
-    private final List<NotificationChannel> channels;
+    private final Map<String, NotificationChannel> channelMap;
+    private final ChannelProperties channelProperties;
+
+    public NotificationService(List<NotificationChannel> channelList, ChannelProperties channelProperties) {
+        this.channelMap = channelList
+                .stream()
+                .collect(Collectors.toMap(
+                        NotificationChannel::name,
+                        channel -> channel));
+
+        this.channelProperties = channelProperties;
+    }
 
     public void send(Notification notification) {
-        for (NotificationChannel channel : channels) {
-            log.info("Sending notification via {} channel", channel.name());
+        String channelName = notification.channel();
+
+        channelName = channelName == null || channelName.isBlank() ? channelProperties.defaultChannel() : channelName.toLowerCase();
+
+        if (!channelProperties.enabled().contains(channelName))
+            throw new ChannelException("Channel is disabled: " + channelName);
+
+        NotificationChannel channel = channelMap.get(channelName);
+        if (channel != null) {
             channel.send(notification);
+        } else {
+            throw new ChannelException("Channel not found: " + channelName);
         }
     }
 }
