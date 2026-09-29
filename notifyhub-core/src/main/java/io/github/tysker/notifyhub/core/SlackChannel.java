@@ -3,9 +3,11 @@ package io.github.tysker.notifyhub.core;
 import io.github.tysker.notifyhub.api.Notification;
 import io.github.tysker.notifyhub.api.NotificationChannel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Slf4j
+@Profile("dev")
 @Component
 public class SlackChannel implements NotificationChannel {
 
