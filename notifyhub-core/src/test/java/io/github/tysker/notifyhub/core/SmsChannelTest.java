@@ -4,25 +4,19 @@ import io.github.tysker.notifyhub.core.config.NotifyHubConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class SmsChannelTest {
 
     ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withUserConfiguration(SmsChannel.class);
-
-    @Test
-    void name() {
-    }
-
-    @Test
-    void send() {
-    }
-
+    
     @Test
     void whenTheHavingValueIsSetToTrueThenTheBeanIsCreated() {
         contextRunner.withPropertyValues("notifyhub.sms.enabled=true")
                 .withUserConfiguration(NotifyHubConfig.class)
                 .run(context -> {
-                    assert context.containsBean("smsChannel");
+                    assertThat(context).hasSingleBean(SmsChannel.class);
                 });
     }
 
@@ -31,7 +25,7 @@ class SmsChannelTest {
         contextRunner.withPropertyValues("notifyhub.sms.enabled=false")
                 .withUserConfiguration(NotifyHubConfig.class)
                 .run(context -> {
-                    assert !context.containsBean("smsChannel");
+                    assertThat(context).doesNotHaveBean(SmsChannel.class);
                 });
     }
 }
