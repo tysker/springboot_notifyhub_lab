@@ -17,36 +17,40 @@ public class NotifyhubAppApplication {
         SpringApplication.run(NotifyhubAppApplication.class, args);
     }
 
+    private void trySend(NotificationService service, Notification notification) {
+        try {
+            service.send(notification);
+        } catch (ChannelException e) {
+            log.warn("Send failed: {}", e.getMessage());
+        }
+    }
+
     @Bean
     public CommandLineRunner sendTestNotifications(NotificationService notificationService) {
         return args -> {
-            notificationService.send(Notification.builder()
+            trySend(notificationService, Notification.builder()
                     .recipient("test@example.com")
                     .subject("Test subject email")
                     .message("This is a test email.")
                     .channel("email")
                     .build());
-            notificationService.send(Notification.builder()
+            trySend(notificationService, Notification.builder()
                     .recipient("+1234567890")
                     .subject("Test subject sms")
                     .message("This is a test sms notification.")
                     .channel("sms")
                     .build());
-            notificationService.send(Notification.builder()
+            trySend(notificationService, Notification.builder()
                     .recipient("test@example.com")
                     .subject("Test subject email")
                     .message("This is a test email without channel name.")
                     .build());
-            try {
-                notificationService.send(Notification.builder()
-                        .recipient("slack-channel")
-                        .subject("Test subject slack")
-                        .message("This is a test slack notification.")
-                        .channel("slack")
-                        .build());
-            } catch (ChannelException e) {
-                log.warn("Failed to send notification: {}", e.getMessage());
-            }
+            trySend(notificationService, Notification.builder()
+                    .recipient("slack-channel")
+                    .subject("Test subject slack")
+                    .message("This is a test slack notification.")
+                    .channel("slack")
+                    .build());
         };
 
     }
