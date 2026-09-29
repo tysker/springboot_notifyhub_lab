@@ -7,6 +7,8 @@ import io.github.tysker.notifyhub.core.exceptions.ChannelException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,8 +19,9 @@ public class NotificationService {
 
     private final Map<String, NotificationChannel> channelMap;
     private final ChannelProperties channelProperties;
+    private final Clock clock;
 
-    public NotificationService(List<NotificationChannel> channelList, ChannelProperties channelProperties) {
+    public NotificationService(List<NotificationChannel> channelList, ChannelProperties channelProperties, Clock clock) {
         this.channelMap = channelList
                 .stream()
                 .collect(Collectors.toMap(
@@ -26,6 +29,7 @@ public class NotificationService {
                         channel -> channel));
 
         this.channelProperties = channelProperties;
+        this.clock = clock;
         log.info("Registered channels: {}", channelMap.keySet());
     }
 
@@ -40,6 +44,8 @@ public class NotificationService {
         if (channel == null) {
             throw new ChannelException("Channel not found: " + channelName);
         }
+        
+        log.info("Sending via {} at {}", channelName, Instant.now(clock));
         channel.send(notification);
     }
 }
