@@ -14,7 +14,6 @@ public class EmailChannel implements NotificationChannel {
 
     private final String sender;
 
-    @Value("${notifyhub.email.sender}")
     @Override
     public String name() {
         return "email";

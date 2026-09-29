@@ -19,38 +19,38 @@ public class NotifyhubAppApplication {
 
     @Bean
     public CommandLineRunner sendTestNotifications(NotificationService notificationService) {
-        try {
-            return args -> {
-                notificationService.send(Notification.builder()
-                        .recipient("test@example.com")
-                        .subject("Test subject email")
-                        .message("This is a test email.")
-                        .channel("email")
-                        .build());
-                notificationService.send(Notification.builder()
-                        .recipient("+1234567890")
-                        .subject("Test subject sms")
-                        .message("This is a test sms notification.")
-                        .channel("sms")
-                        .build());
-                notificationService.send(Notification.builder()
-                        .recipient("test@example.com")
-                        .subject("Test subject email")
-                        .message("This is a test email without channel name.")
-                        .build());
+        return args -> {
+            notificationService.send(Notification.builder()
+                    .recipient("test@example.com")
+                    .subject("Test subject email")
+                    .message("This is a test email.")
+                    .channel("email")
+                    .build());
+            notificationService.send(Notification.builder()
+                    .recipient("+1234567890")
+                    .subject("Test subject sms")
+                    .message("This is a test sms notification.")
+                    .channel("sms")
+                    .build());
+            notificationService.send(Notification.builder()
+                    .recipient("test@example.com")
+                    .subject("Test subject email")
+                    .message("This is a test email without channel name.")
+                    .build());
+            try {
                 notificationService.send(Notification.builder()
                         .recipient("slack-channel")
                         .subject("Test subject slack")
                         .message("This is a test slack notification.")
                         .channel("slack")
                         .build());
-            };
-        } catch (ChannelException e) {
-            log.error("Error sending notification: {}", e.getMessage());
-            return args -> {
-            };
-        }
+            } catch (ChannelException e) {
+                log.error("Error occurred while sending slack notification.", e);
+            }
+        };
 
     }
 
 }
+
+

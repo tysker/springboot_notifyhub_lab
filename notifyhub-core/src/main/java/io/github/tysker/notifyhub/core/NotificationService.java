@@ -31,13 +31,16 @@ public class NotificationService {
     public void send(Notification notification) {
         String channelName = notification.channel();
 
-        channelName = channelName == null || channelName.trim().isBlank() ? channelProperties.defaultChannel() : channelName.toLowerCase();
+        channelName = channelName == null || channelName.isBlank() ? channelProperties.defaultChannel() : channelName.toLowerCase();
 
         if (!channelProperties.enabled().contains(channelName))
-            throw new ChannelException("Notification channel not found: " + channelName);
+            throw new ChannelException("Channel is disabled: " + channelName);
 
         NotificationChannel channel = channelMap.get(channelName);
-
-        channel.send(notification);
+        if (channelMap.containsKey(channelName)) {
+            channel.send(notification);
+        } else {
+            throw new ChannelException("Channel not found: " + channelName);
+        }
     }
 }
