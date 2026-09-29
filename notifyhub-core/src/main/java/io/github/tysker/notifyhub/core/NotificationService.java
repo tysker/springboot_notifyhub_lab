@@ -26,21 +26,20 @@ public class NotificationService {
                         channel -> channel));
 
         this.channelProperties = channelProperties;
+        log.info("Registered channels: {}", channelMap.keySet());
     }
 
     public void send(Notification notification) {
         String channelName = notification.channel();
-
         channelName = channelName == null || channelName.isBlank() ? channelProperties.defaultChannel() : channelName.toLowerCase();
 
         if (!channelProperties.enabled().contains(channelName))
             throw new ChannelException("Channel is disabled: " + channelName);
 
         NotificationChannel channel = channelMap.get(channelName);
-        if (channel != null) {
-            channel.send(notification);
-        } else {
+        if (channel == null) {
             throw new ChannelException("Channel not found: " + channelName);
         }
+        channel.send(notification);
     }
 }
