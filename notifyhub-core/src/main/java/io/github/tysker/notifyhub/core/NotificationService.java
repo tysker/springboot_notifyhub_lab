@@ -37,7 +37,7 @@ public class NotificationService {
             throw new ChannelException("Channel is disabled: " + channelName);
 
         NotificationChannel channel = channelMap.get(channelName);
-        if (channelMap.containsKey(channelName)) {
+        if (channel != null) {
             channel.send(notification);
         } else {
             throw new ChannelException("Channel not found: " + channelName);

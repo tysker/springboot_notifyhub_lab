@@ -45,7 +45,7 @@ public class NotifyhubAppApplication {
                         .channel("slack")
                         .build());
             } catch (ChannelException e) {
-                log.error("Error occurred while sending slack notification.", e);
+                log.warn("Failed to send notification: {}", e.getMessage());
             }
         };
 
