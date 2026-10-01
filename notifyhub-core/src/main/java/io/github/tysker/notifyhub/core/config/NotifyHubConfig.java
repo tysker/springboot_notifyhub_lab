@@ -1,6 +1,7 @@
 package io.github.tysker.notifyhub.core.config;
 
 import io.github.tysker.notifyhub.core.FallbackChannel;
+import io.github.tysker.notifyhub.core.annotations.Channel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ public class NotifyHubConfig {
     }
 
     @Bean
+    @Channel("fallback")
     public FallbackChannel fallbackChannel() {
         return new FallbackChannel();
     }

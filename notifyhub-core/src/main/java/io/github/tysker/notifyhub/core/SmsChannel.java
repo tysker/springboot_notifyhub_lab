@@ -2,6 +2,7 @@ package io.github.tysker.notifyhub.core;
 
 import io.github.tysker.notifyhub.api.Notification;
 import io.github.tysker.notifyhub.api.NotificationChannel;
+import io.github.tysker.notifyhub.core.annotations.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @ConditionalOnProperty(prefix = "notifyhub.sms", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Component
+@Channel("sms")
 public class SmsChannel implements NotificationChannel {
 
     private final int maxLength;

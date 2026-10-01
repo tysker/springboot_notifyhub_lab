@@ -2,6 +2,7 @@ package io.github.tysker.notifyhub.core;
 
 import io.github.tysker.notifyhub.api.Notification;
 import io.github.tysker.notifyhub.api.NotificationChannel;
+import io.github.tysker.notifyhub.core.annotations.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Profile("dev")
 @Component
+@Channel("slack")
 public class SlackChannel implements NotificationChannel {
 
     @Override
