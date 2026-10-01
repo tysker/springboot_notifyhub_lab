@@ -3,6 +3,7 @@ package io.github.tysker.notifyhub.core;
 import io.github.tysker.notifyhub.api.Notification;
 import io.github.tysker.notifyhub.api.NotificationChannel;
 import io.github.tysker.notifyhub.api.NotificationSentEvent;
+import io.github.tysker.notifyhub.core.annotations.LogExecutionTime;
 import io.github.tysker.notifyhub.core.config.ChannelProperties;
 import io.github.tysker.notifyhub.core.exceptions.ChannelException;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +44,9 @@ public class NotificationService {
         log.info("Registered channels: {}", channelMap.keySet());
     }
 
+    @LogExecutionTime
     public void send(Notification notification) {
-        String channelName = notification.channel();
-        channelName = channelName == null || channelName.isBlank() ? channelProperties.defaultChannel() : channelName.toLowerCase();
+        String channelName = resolveChannelName(notification);
 
         if (!channelProperties.enabled().contains(channelName))
             throw new ChannelException("Channel is disabled: " + channelName);
@@ -60,4 +61,10 @@ public class NotificationService {
         channel.send(notification);
         publisher.publishEvent(new NotificationSentEvent(notification, channelName, now));
     }
+
+    public String resolveChannelName(Notification notification) {
+        String channelName = notification.channel();
+        return channelName == null || channelName.isBlank() ? channelProperties.defaultChannel() : channelName.toLowerCase();
+    }
+
 }
