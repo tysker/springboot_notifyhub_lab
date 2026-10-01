@@ -1,6 +1,7 @@
 package io.github.tysker.notifyhub;
 
 import io.github.tysker.notifyhub.api.Notification;
+import io.github.tysker.notifyhub.core.AdminAlertService;
 import io.github.tysker.notifyhub.core.NotificationService;
 import io.github.tysker.notifyhub.core.exceptions.ChannelException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class NotifyhubAppApplication {
     }
 
     @Bean
-    public CommandLineRunner sendTestNotifications(NotificationService notificationService) {
+    public CommandLineRunner sendTestNotifications(NotificationService notificationService, AdminAlertService adminAlertService) {
         return args -> {
             trySend(notificationService, Notification.builder()
                     .recipient("test@example.com")
@@ -51,6 +52,8 @@ public class NotifyhubAppApplication {
                     .message("This is a test slack notification.")
                     .channel("slack")
                     .build());
+
+            adminAlertService.alert("Disk almost full.");
         };
 
     }
