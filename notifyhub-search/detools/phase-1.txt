@@ -1,0 +1,37 @@
+GET /
+GET _cat/health?v
+GET _cat/nodes?v
+GET _cat/indices?v
+GET _cat/indices/notifications-v1?v
+GET _cat/shards/notifications-v1?v
+GET notifications-v1/_mapping
+
+PUT test-yellow
+PUT notifications-v1
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "id":         { "type": "keyword" },
+      "channel":    { "type": "keyword" },
+      "recipient":  { "type": "keyword" },
+      "subject": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      "message":    { "type": "text" },
+      "status":     { "type": "keyword" },
+      "retries":    { "type": "integer" },
+      "durationMs": { "type": "long" },
+      "createdAt":  { "type": "date" }
+    }
+  }
+}
+
+DELETE test-yellow
