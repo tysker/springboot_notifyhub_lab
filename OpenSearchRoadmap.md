@@ -10,9 +10,9 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 
 ## Phase 0 – Setup
 
-- [ ] OpenSearch + OpenSearch Dashboards running locally (Docker Compose)
-- [ ] Postgres in the same Docker Compose
-- [ ] New module `notifyhub-search`
+- [X] OpenSearch + OpenSearch Dashboards running locally (Docker Compose)
+- [X] Postgres in the same Docker Compose
+- [X] New module `notifyhub-search`
 
 ## Phase 1 – OpenSearch basics in Dev Tools (no Java yet)
 
