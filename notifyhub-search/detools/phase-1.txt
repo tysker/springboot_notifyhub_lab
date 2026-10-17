@@ -1,13 +1,19 @@
 GET /
+# Get information about the OpenSearch cluster
 GET _cat/health?v
+# Get information about the nodes in the cluster
 GET _cat/nodes?v
+# Get information about the indices in the cluster
 GET _cat/indices?v
+# Get information about the aliases in the cluster
 GET _cat/aliases?v
-GET _cat/indices/notifications-v1?v
-GET _cat/shards/notifications-v1?v
+GET _cat/indices/notifications-?v
+GET _cat/shards/notifications?v
 GET notifications-v1/_mapping
 
 PUT test-yellow
+
+# Create the notifications-v1 index with strict mapping
 PUT notifications-v1
 {
   "settings": {
@@ -35,6 +41,22 @@ PUT notifications-v1
   }
 }
 
+# Create a notification document
+PUT notifications/_doc/<uuid>
+{
+  "id": "<uuid>",
+  "channel": "EMAIL",
+  "recipient": "anna@example.com",
+  "subject": "Payment received",
+  "message": "We have received your payment of 250 DKK. Thank you!",
+  "status": "SENT",
+  "retries": 0,
+  "durationMs": 120,
+  "createdAt": "2026-10-17T10:00:00Z"
+}
+
+
+# Create an alias for the notifications-v1 index
 POST _aliases
 {
   "actions": [
@@ -47,4 +69,15 @@ POST _aliases
     }
   ]
 }
-DELETE test-yellow
+
+# Update the status and retries of a notification document
+POST notifications/_update/<uuid>
+{
+  "doc": {
+    "status": "FAILED",
+    "retries": 1
+  }
+}
+
+# Delete a notification document
+DELETE notifications/_doc/<uuid>
