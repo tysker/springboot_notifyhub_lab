@@ -2,6 +2,7 @@ GET /
 GET _cat/health?v
 GET _cat/nodes?v
 GET _cat/indices?v
+GET _cat/aliases?v
 GET _cat/indices/notifications-v1?v
 GET _cat/shards/notifications-v1?v
 GET notifications-v1/_mapping
@@ -34,4 +35,16 @@ PUT notifications-v1
   }
 }
 
+POST _aliases
+{
+  "actions": [
+    {
+      "add": {
+        "index": "notifications-v1",
+        "alias": "notifications",
+        "is_write_index": true
+      }
+    }
+  ]
+}
 DELETE test-yellow

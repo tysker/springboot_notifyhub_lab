@@ -10,16 +10,16 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 
 ## Phase 0 – Setup
 
-- [ ] OpenSearch + OpenSearch Dashboards running locally (Docker Compose)
-- [ ] Postgres in the same Docker Compose
-- [ ] New module `notifyhub-search`
+- [x] OpenSearch + OpenSearch Dashboards running locally (Docker Compose)
+- [x] Postgres in the same Docker Compose
+- [x] New module `notifyhub-search`
 
 ## Phase 1 – OpenSearch basics in Dev Tools (no Java yet)
 
 - [ ] Index vs indices, documents, `_id`
 - [ ] Create / get / delete an index
-- [ ] Mappings: `text` vs `keyword`, `date`, numbers, multi-fields (`message.keyword`)
-- [ ] Index settings: shards, replicas, analyzers
+- [x] Mappings: `text` vs `keyword`, `date`, numbers, multi-fields (`message.keyword`)
+- [x] Index settings: shards, replicas, analyzers
 - [ ] Index / get / update / delete documents
 - [ ] `_bulk`
 - [ ] Why a mapping can't be changed → reindexing
@@ -33,7 +33,7 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 
 ## Phase 3 – Mappings as Java classes
 
-- [ ] Java classes that build the mapping JSON
+- [ ] Java classes that build the mapping JSON with Jackson `ObjectMapper` + `ObjectNode`
 - [ ] Index-creation service that applies mappings on startup
 - [ ] Check if index exists / if mapping matches
 
@@ -57,7 +57,8 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 - [ ] `bool`: `must`, `filter`, `should`, `must_not` (query vs filter context)
 - [ ] Sorting, pagination (`from`/`size`), later `search_after`
 - [ ] Highlighting, fuzzy search
-- [ ] Queries built as Java classes → search REST endpoint
+- [ ] Queries built as Java classes (`ObjectNode`) → search REST endpoint
+- [ ] Reading responses with `ObjectMapper` (`JsonNode` → hits, aggregations)
 
 ## Phase 7 – Aggregations
 
