@@ -27,6 +27,8 @@ GET notifications/_analyze
   "field": "subject.keyword",
   "text": "Payment failed"
 }
+# Re-index the notifications index after changing the mapping
+POST notifications/_update_by_query
 
 # SEARCH QUERIES
 
@@ -122,6 +124,26 @@ PUT notifications/_doc/<uuid>
   "createdAt": "2026-10-17T10:00:00Z"
 }
 
+# Add a new field to an existing mapping
+PUT notifications/_mapping
+{
+  "properties": {
+    "template": { "type": "keyword" }
+  }
+}
+
+# Add a sub-field to an existing field
+PUT notifications/_mapping
+{
+  "properties": {
+    "message": {
+      "type": "text",
+      "fields": {
+        "keyword": { "type": "keyword" }
+      }
+    }
+  }
+}
 
 # Create an alias for the notifications-v1 index
 POST _aliases
