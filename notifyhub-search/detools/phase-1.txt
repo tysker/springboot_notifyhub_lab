@@ -1,0 +1,221 @@
+# Get information about the root of the OpenSearch cluster
+GET /
+# Get information about the OpenSearch cluster
+GET _cat/health?v
+# Get information about the nodes in the cluster
+GET _cat/nodes?v
+# Get information about the indices in the cluster
+GET _cat/indices?v
+# Get information about the aliases in the cluster
+GET _cat/aliases?v
+# Get information about all indices that start with "notifications-"
+GET _cat/indices/notifications-?v
+# Get information about the shards in the cluster
+GET _cat/shards/notifications?v
+# Get the mapping of the notifications-v1 index
+GET notifications-v1/_mapping
+# Get the document count of the notifications index
+GET notifications/_count
+# Analyze the text "Payment failed" using the subject field of the notifications index
+GET notifications/_analyze
+{
+  "field": "subject",
+  "text": "Payment failed"
+}
+GET notifications/_analyze
+{
+  "field": "subject.keyword",
+  "text": "Payment failed"
+}
+# Re-index the notifications index after changing the mapping
+POST notifications/_update_by_query
+
+# SEARCH QUERIES
+
+# Get the first 10 documents in the notifications index
+GET notifications/_search
+# By Size
+GET notifications/_search?size=12
+
+# Match
+GET notifications/_search
+{
+  "query": {
+    "match": {
+      "subject": "payment FAILED"
+    }
+  }
+}
+
+# Term(s) GROUP BY
+GET notifications/_search
+{
+  "size": 0,
+  "aggs": {
+    "per_status": {
+      "terms": { "field": "status" }
+    }
+  }
+}
+
+# Term(s)
+GET notifications/_search
+GET notifications/_search
+{
+  "query": {
+    "terms": {
+        "status": ["FAILED", "SENT"]
+    }
+  }
+}
+
+# Term on text (no hits)
+GET notifications/_search
+{
+  "query": {
+    "term": {
+      "subject": "Payment failed"
+    }
+  }
+}
+
+# Term on keyword (one hit)
+GET notifications/_search
+{
+  "query": {
+    "term": {
+      "subject.keyword": "Payment failed"
+    }
+  }
+}
+# By default match uses or: any of the words is enough. With and, all of them must be present.
+GET notifications/_search
+{
+  "query": {
+    "match": {
+      "subject": {
+        "query": "payment FAILED",
+        "operator": "and"
+      }
+    }
+  }
+}
+
+# Create a test index with default mapping
+PUT test-yellow
+
+# Create the notifications-v1 index with strict mapping
+PUT notifications-v1
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "id":         { "type": "keyword" },
+      "channel":    { "type": "keyword" },
+      "recipient":  { "type": "keyword" },
+      "subject": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      "message":    { "type": "text" },
+      "status":     { "type": "keyword" },
+      "retries":    { "type": "integer" },
+      "durationMs": { "type": "long" },
+      "createdAt":  { "type": "date" }
+    }
+  }
+}
+
+# Create a notification document
+PUT notifications/_doc/<uuid>
+{
+  "id": "<uuid>",
+  "channel": "EMAIL",
+  "recipient": "anna@example.com",
+  "subject": "Payment received",
+  "message": "We have received your payment of 250 DKK. Thank you!",
+  "status": "SENT",
+  "retries": 0,
+  "durationMs": 120,
+  "createdAt": "2026-10-17T10:00:00Z"
+}
+
+# Add a new field to an existing mapping
+PUT notifications/_mapping
+{
+  "properties": {
+    "template": { "type": "keyword" }
+  }
+}
+
+# Add a sub-field to an existing field
+PUT notifications/_mapping
+{
+  "properties": {
+    "message": {
+      "type": "text",
+      "fields": {
+        "keyword": { "type": "keyword" }
+      }
+    }
+  }
+}
+
+# Create an alias for the notifications-v1 index
+POST _aliases
+{
+  "actions": [
+    {
+      "add": {
+        "index": "notifications-v1",
+        "alias": "notifications",
+        "is_write_index": true
+      }
+    }
+  ]
+}
+
+# Update the status and retries of a notification document
+POST notifications/_update/<uuid>
+{
+  "doc": {
+    "status": "FAILED",
+    "retries": 1
+  }
+}
+
+# Delete a notification document
+DELETE notifications/_doc/<uuid>
+
+# Bulk insert multiple notification documents
+POST notifications/_bulk
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000001" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000001", "channel": "EMAIL", "recipient": "anna@example.com", "subject": "Payment failed", "message": "Your payment of 250 DKK could not be processed.", "status": "FAILED", "retries": 3, "durationMs": 5021, "createdAt": "2026-10-12T08:15:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000002" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000002", "channel": "EMAIL", "recipient": "bo@example.com", "subject": "Payment received", "message": "We have received your payment of 99 DKK. Thank you!", "status": "SENT", "retries": 0, "durationMs": 110, "createdAt": "2026-10-12T09:30:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000003" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000003", "channel": "SMS", "recipient": "+4512345678", "subject": "Your payment failed again", "message": "Second attempt to charge your card failed.", "status": "FAILED", "retries": 2, "durationMs": 3400, "createdAt": "2026-10-13T07:45:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000004" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000004", "channel": "EMAIL", "recipient": "carl@example.com", "subject": "Payment reminder", "message": "Your invoice is due in 3 days.", "status": "PENDING", "retries": 0, "durationMs": 0, "createdAt": "2026-10-13T12:00:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000005" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000005", "channel": "EMAIL", "recipient": "dina@example.com", "subject": "Welcome to NotifyHub", "message": "Thanks for signing up. We are happy to have you.", "status": "SENT", "retries": 0, "durationMs": 95, "createdAt": "2026-10-14T10:10:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000006" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000006", "channel": "EMAIL", "recipient": "anna@example.com", "subject": "Password reset", "message": "Click the link to reset your password.", "status": "SENT", "retries": 0, "durationMs": 130, "createdAt": "2026-10-14T18:20:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000007" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000007", "channel": "PUSH", "recipient": "device-77", "subject": "Order shipped", "message": "Your order is on its way.", "status": "SENT", "retries": 0, "durationMs": 45, "createdAt": "2026-10-15T08:00:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000008" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000008", "channel": "PUSH", "recipient": "device-77", "subject": "Order delivered", "message": "Your order has been delivered.", "status": "SENT", "retries": 0, "durationMs": 50, "createdAt": "2026-10-16T14:30:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000009" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000009", "channel": "SMS", "recipient": "+4587654321", "subject": "Login from new device", "message": "A new device logged in to your account.", "status": "SENT", "retries": 1, "durationMs": 800, "createdAt": "2026-10-16T21:05:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000010" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000010", "channel": "EMAIL", "recipient": "bo@example.com", "subject": "Subscription failed", "message": "We could not renew your subscription.", "status": "FAILED", "retries": 3, "durationMs": 4800, "createdAt": "2026-10-17T06:00:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000011" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000011", "channel": "SMS", "recipient": "+4512345678", "subject": "Order shipped", "message": "Your order is on its way.", "status": "PENDING", "retries": 0, "durationMs": 0, "createdAt": "2026-10-17T09:15:00Z" }
+{ "index": { "_id": "a1b2c3d4-0000-4000-8000-000000000012" } }
+{ "id": "a1b2c3d4-0000-4000-8000-000000000012", "channel": "EMAIL", "recipient": "carl@example.com", "subject": "Weekly summary", "message": "Here is what happened this week.", "status": "SENT", "retries": 0, "durationMs": 140, "createdAt": "2026-10-17T11:00:00Z" }
