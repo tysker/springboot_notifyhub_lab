@@ -47,6 +47,28 @@ GET notifications/_search
   }
 }
 
+# Term(s) GROUP BY
+GET notifications/_search
+{
+  "size": 0,
+  "aggs": {
+    "per_status": {
+      "terms": { "field": "status" }
+    }
+  }
+}
+
+# Term(s)
+GET notifications/_search
+GET notifications/_search
+{
+  "query": {
+    "terms": {
+        "status": ["FAILED", "SENT"]
+    }
+  }
+}
+
 # Term on text (no hits)
 GET notifications/_search
 {
