@@ -16,9 +16,66 @@ GET _cat/shards/notifications?v
 GET notifications-v1/_mapping
 # Get the document count of the notifications index
 GET notifications/_count
+# Analyze the text "Payment failed" using the subject field of the notifications index
+GET notifications/_analyze
+{
+  "field": "subject",
+  "text": "Payment failed"
+}
+GET notifications/_analyze
+{
+  "field": "subject.keyword",
+  "text": "Payment failed"
+}
+
+# SEARCH QUERIES
+
 # Get the first 10 documents in the notifications index
 GET notifications/_search
-GET notifications/_search?size=13
+# By Size
+GET notifications/_search?size=12
+
+# Match
+GET notifications/_search
+{
+  "query": {
+    "match": {
+      "subject": "payment FAILED"
+    }
+  }
+}
+
+# Term on text (no hits)
+GET notifications/_search
+{
+  "query": {
+    "term": {
+      "subject": "Payment failed"
+    }
+  }
+}
+
+# Term on keyword (one hit)
+GET notifications/_search
+{
+  "query": {
+    "term": {
+      "subject.keyword": "Payment failed"
+    }
+  }
+}
+# By default match uses or: any of the words is enough. With and, all of them must be present.
+GET notifications/_search
+{
+  "query": {
+    "match": {
+      "subject": {
+        "query": "payment FAILED",
+        "operator": "and"
+      }
+    }
+  }
+}
 
 # Create a test index with default mapping
 PUT test-yellow
