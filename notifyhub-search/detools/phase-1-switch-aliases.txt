@@ -1,0 +1,116 @@
+## Switch the alias from version1 to version2
+
+### Create `index-name-v2`
+
+```json
+PUT index-name-v2
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "id":         { "type": "keyword" },
+      "channel":    { "type": "keyword" },
+      "recipient":  { "type": "keyword" },
+      "subject": {
+        "type": "text",
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "message": {
+        "type": "text",
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "status":     { "type": "keyword" },
+      "retries":    { "type": "integer" },
+      "durationMs": { "type": "long" },
+      "createdAt":  { "type": "date" },
+      "template":   { "type": "keyword" }
+    }
+  }
+}
+```
+
+**Expected:** `"acknowledged": true`.
+
+Then run:
+```
+GET _cat/indices/index-name-v*?v
+```
+**Expected:** two indices, `index-name-v1` with `docs.count` (a number) and `index-name-v2` with `docs.count` 0.
+
+### Copy the data with `_reindex`
+
+```json
+POST _reindex
+{
+  "source": { "index": "index-name-v1" },
+  "dest":   { "index": "index-name-v2" }
+}
+```
+
+**Important exception to the "always use the alias" rule:** `dest` must be the **real** index name. If you wrote `index-name`  (the alias) here, it would resolve to the write index, which is still v1, and you'd copy v1 into itself.
+
+**Expected:** `"total": (some number)`, `"created": (some number`, `"failures": []`.
+
+### Check v2 before switching
+
+```
+GET index-name-v2/_count
+```
+
+### The switch (one atomic request)
+
+```json
+POST _aliases
+{
+  "actions": [
+    { "remove": { "index": "index-name-v1", "alias": "index-name-alias" } },
+    { "add":    { "index": "index-name-v2", "alias": "index-name-alias", "is_write_index": true } }
+  ]
+}
+```
+
+Both actions are applied **at the same moment**. There's never an instant where `index-name` points to nothing, or to both indices.
+
+**Expected:** `"acknowledged": true`.
+
+### 8e – Verify the application "doesn't notice"
+
+```
+GET _cat/aliases?v
+```
+**Expected:** `index-name` now points to `index-name-v2`, with `is_write_index` `true`.
+
+```
+GET index-name/_doc/index_id
+```
+**Expected:** the same document as before, but `_index` is now `index-name-v2`. The request was identical; only the alias changed.
+
+### Write through the alias
+
+Index one new document with `PUT index-name/_doc/<new-uuid>`, using any values you like (only fields from the mapping).
+
+**Expected:** `"_index": "index-name-v2"`.
+
+Then run:
+```
+GET _cat/indices/index-name-v*?v
+```
+**Expected:** v1 has 12 documents and v2 has 13. v1 is now frozen in time.
+
+### 8g – Rollback (try it, then switch back)
+
+Rolling back is the same request with v1 and v2 swapped. Run it, check `_cat/aliases`, then run 8d again so v2 is active.
+
+**Think about it:** after the rollback, the document from 8f is "missing". Why? (That's the writes-during-migration problem from Phase 8.)
+
+### Delete v1
+
+When you're confident v2 is good:
+```
+DELETE index-name-v1
+```
+**Expected:** `"acknowledged": true`. After this, rollback is no longer possible.

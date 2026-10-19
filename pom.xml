@@ -33,6 +33,7 @@
         <module>notifyhub-app</module>
         <module>notifyhub-core</module>
         <module>notifyhub-api</module>
+        <module>notifyhub-search</module>
     </modules>
 
     <!-- Project Properties -->
