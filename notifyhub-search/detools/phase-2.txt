@@ -1,0 +1,2 @@
+# Check OpenSearch cluster health
+GET _cluster/health
