@@ -1,4 +1,4 @@
-package io.github.tysker.notifyhub.config;
+package io.github.tysker.notifyhub.search.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

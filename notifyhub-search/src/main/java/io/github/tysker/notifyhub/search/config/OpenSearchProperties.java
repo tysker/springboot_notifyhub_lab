@@ -1,4 +1,4 @@
-package io.github.tysker.notifyhub.config;
+package io.github.tysker.notifyhub.search.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
