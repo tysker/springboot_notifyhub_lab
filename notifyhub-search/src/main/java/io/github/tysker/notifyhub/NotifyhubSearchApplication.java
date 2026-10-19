@@ -1,4 +1,4 @@
-package io.github.tysker.notifyhubsearch;
+package io.github.tysker.notifyhub;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
