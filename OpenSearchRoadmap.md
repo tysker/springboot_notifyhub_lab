@@ -8,21 +8,24 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 
 ---
 
-## Phase 0 – Setup
+## Phase 0 – Setup ✅
 
 - [x] OpenSearch + OpenSearch Dashboards running locally (Docker Compose)
 - [x] Postgres in the same Docker Compose
 - [x] New module `notifyhub-search`
 
-## Phase 1 – OpenSearch basics in Dev Tools (no Java yet)
+## Phase 1 – OpenSearch basics in Dev Tools (no Java yet) ✅
 
-- [ ] Index vs indices, documents, `_id`
-- [ ] Create / get / delete an index
+- [x] Index vs indices, documents, `_id`
+- [x] Create / get / delete an index
 - [x] Mappings: `text` vs `keyword`, `date`, numbers, multi-fields (`message.keyword`)
-- [x] Index settings: shards, replicas, analyzers
-- [ ] Index / get / update / delete documents
-- [ ] `_bulk`
-- [ ] Why a mapping can't be changed → reindexing
+- [x] Index settings: shards, replicas (yellow vs green)
+- [x] Index / get / update / delete documents (`noop`, `dynamic: strict`)
+- [x] `_bulk` (incl. partial failures, `errors: true`)
+- [x] `match` vs `term`, `operator`, `_analyze`
+- [x] Why a mapping can't be changed; adding fields/sub-fields + `_update_by_query`
+- [x] Alias, `_reindex` v1 → v2, atomic alias switch, rollback
+- [ ] Analyzers (custom analyzer) – revisit in Phase 6
 
 ## Phase 2 – Talking to OpenSearch from Spring Boot
 
@@ -72,10 +75,10 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 
 ## Phase 8 – Index management
 
-- [ ] Aliases (read / write alias)
+- [ ] Alias switch from Java (Phase 1 did it by hand)
 - [ ] Index templates
 - [ ] Time-based indices (`notifications-2026.10`)
-- [ ] `_reindex` with zero downtime via alias switch
+- [ ] Zero-downtime reindex incl. writes that arrive during the copy
 - [ ] `_update_by_query`, `_delete_by_query`
 
 ## Phase 9 – Quality
