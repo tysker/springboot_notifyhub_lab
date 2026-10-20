@@ -77,7 +77,8 @@ public class IndexAdminService {
         body.putArray("actions")
                 .addObject().putObject("add")
                 .put("index", index)
-                .put("alias", alias);
+                .put("alias", alias)
+                .put("is_write_index", true);
 
         String responseJson = openSearchRestClient
                 .post()

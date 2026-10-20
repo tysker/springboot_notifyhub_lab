@@ -23,7 +23,7 @@ public class OpenSearchStartupCheck implements ApplicationRunner {
     private final OpenSearchProperties openSearchProperties;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
 
         // === Check OpenSearch connection ===
         //JsonNode root = openSearchRestClient.get().uri("/").retrieve().body(JsonNode.class);
