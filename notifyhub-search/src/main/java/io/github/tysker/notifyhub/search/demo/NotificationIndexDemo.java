@@ -27,11 +27,15 @@ public class NotificationIndexDemo implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-//        String id = index();
-//        String result = update(id, NotificationStatus.FAILED, 2);
-//        boolean ok = delete("a1b2c3d4-0000-4000-8000-000000000007");
-//        NotificationDocument notificationDocument = findByID("1");
-//        System.out.println(notificationDocument);
+        try {
+//            String id = index();
+//            String result = update(id, NotificationStatus.FAILED, 2);
+//            boolean ok = delete("a1b2c3d4-0000-4000-8000-000000000007");
+            NotificationDocument notificationDocument = findByID("1");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
     }
 
 

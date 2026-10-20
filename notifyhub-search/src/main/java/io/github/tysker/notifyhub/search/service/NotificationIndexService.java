@@ -61,7 +61,7 @@ public class NotificationIndexService {
                     .body(String.class);
 
             JsonNode response = objectMapper.readTree(responseJson);
-            JsonNode source = response.get("_source");
+            JsonNode source = response.path("_source");
             return Optional.of(objectMapper.treeToValue(source, NotificationDocument.class));
 
         } catch (OpenSearchException e) {

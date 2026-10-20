@@ -5,12 +5,12 @@ import lombok.Getter;
 @Getter
 public class OpenSearchException extends RuntimeException {
 
-    public int status;
-    public String type;
-    public String reason;
+    private final int status;
+    private final String type;
+    private final String reason;
 
     public OpenSearchException(int status, String type, String reason) {
-        super();
+        super("OpenSearch error " + status + " [" + type + "]: " + reason);
         this.status = status;
         this.type = type;
         this.reason = reason;
