@@ -12,6 +12,7 @@ import tools.jackson.databind.node.ObjectNode;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -91,17 +92,24 @@ public class IndexAdminService {
         log.info("Added alias '{}' to index '{}' -> acknowledged={}", alias, index, response.path("acknowledged").asBoolean());
     }
 
-    public JsonNode getMapping(String index) {
-        String responseJson = openSearchRestClient
-                .get()
-                .uri("/{index}/_mapping", index)
-                .retrieve()
-                .body(String.class);
-        log.debug("Retrieved mapping for index {}: {}", index, responseJson);
+    public Optional<JsonNode> getMapping(String index) {
+        try {
+            String responseJson = openSearchRestClient
+                    .get()
+                    .uri("/{index}/_mapping", index)
+                    .retrieve()
+                    .body(String.class);
 
-        JsonNode response = objectMapper.readTree(responseJson).path(index).path("mappings");
-        return response.isMissingNode() ? objectMapper.createObjectNode() : response;
+            log.debug("Retrieved mapping for index {}: {}", index, responseJson);
+            JsonNode response = objectMapper.readTree(responseJson).path(index).path("mappings");
+            return Optional.of(response);
+
+        } catch (OpenSearchException e) {
+            if (e.isNotFound()) {
+                log.debug("Index '{}' does not exist, cannot retrieve mapping", index);
+                return Optional.empty();
+            }
+            throw e;
+        }
     }
-
-
 }
