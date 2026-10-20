@@ -38,7 +38,7 @@ public class OpenSearchStartupCheck implements ApplicationRunner {
             if (openSearchProperties.failOnStartup()) {
                 throw new IllegalStateException(errorMessage, e);
             }
-            log.warn(errorMessage, e);
+            log.warn(errorMessage);
             return;
         }
 
