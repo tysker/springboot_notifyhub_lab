@@ -5,10 +5,12 @@ import io.github.tysker.notifyhub.search.document.NotificationDocument;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -20,6 +22,7 @@ public class NotificationIndexService {
     private final ObjectMapper objectMapper;
     private final OpenSearchProperties openSearchProperties;
 
+    // region Indexing
     public String index(NotificationDocument document) {
         if (document.getId() == null) {
             document.setId(UUID.randomUUID().toString());
@@ -44,4 +47,25 @@ public class NotificationIndexService {
 
         return document.getId();
     }
+    // endregion
+
+    // region GET Queries
+    public Optional<NotificationDocument> findById(String id) {
+        try {
+            String responseJson = openSearchRestClient
+                    .get()
+                    .uri("/{alias}/_doc/{id}", openSearchProperties.alias(), id)
+                    .retrieve()
+                    .body(String.class);
+
+            JsonNode response = objectMapper.readTree(responseJson);
+            JsonNode source = response.get("_source");
+            return Optional.of(objectMapper.treeToValue(source, NotificationDocument.class));
+
+        } catch (HttpClientErrorException.NotFound e) {
+            log.debug("Document {} not found", id);
+            return Optional.empty();
+        }
+    }
+    // endregion
 }
