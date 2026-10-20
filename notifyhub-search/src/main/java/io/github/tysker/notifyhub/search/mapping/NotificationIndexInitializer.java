@@ -28,13 +28,26 @@ public class NotificationIndexInitializer implements ApplicationRunner {
             String alias = openSearchProperties.alias();
             String index = alias + "-v" + NotificationIndexDefinition.VERSION;
 
+            // -- Create index if it doesn't exist --
             if (indexAdminService.indexExists(index)) {
                 log.info("Index {} already exists", index);
-                log.info("Live mapping: {}", indexAdminService.getMapping(index));
             } else {
                 indexAdminService.createIndex(index, definition.createIndexBody());
             }
 
+            // -- Ensure the mapping is up to date --
+            indexAdminService.getMapping(index).ifPresentOrElse(
+                    existingMapping -> {
+                        if (!existingMapping.equals(definition.mappings())) {
+                            log.warn("Mapping of {} differs from the Java definition – live: {}, expected: {}", index, existingMapping, definition.mappings());
+                        } else {
+                            log.info("Mapping of {} matches the Java definition", index);
+                        }
+                    },
+                    () -> log.warn("Index {} mapping not found – this should not happen", index)
+            );
+
+            // -- Ensure alias points to the correct index --
             Set<String> targets = indexAdminService.aliasTargets(alias);
             if (targets.isEmpty()) {
                 indexAdminService.addAlias(index, alias);
@@ -44,6 +57,7 @@ public class NotificationIndexInitializer implements ApplicationRunner {
             } else {
                 log.warn("Alias {} points to {}, but this version expects {} – switch it manually", alias, targets, index);
             }
+
         } catch (ResourceAccessException e) {
             String errorMessage = "OpenSearch is not reachable at " + openSearchProperties.baseUrl() + " – is the container running? (docker compose ps)";
             if (openSearchProperties.failOnStartup()) {
