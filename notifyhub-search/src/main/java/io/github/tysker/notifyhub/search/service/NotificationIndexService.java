@@ -3,10 +3,10 @@ package io.github.tysker.notifyhub.search.service;
 import io.github.tysker.notifyhub.search.config.OpenSearchProperties;
 import io.github.tysker.notifyhub.search.document.NotificationDocument;
 import io.github.tysker.notifyhub.search.document.NotificationStatus;
+import io.github.tysker.notifyhub.search.exception.OpenSearchException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -64,9 +64,12 @@ public class NotificationIndexService {
             JsonNode source = response.get("_source");
             return Optional.of(objectMapper.treeToValue(source, NotificationDocument.class));
 
-        } catch (HttpClientErrorException.NotFound e) {
-            log.debug("Document {} not found", id);
-            return Optional.empty();
+        } catch (OpenSearchException e) {
+            if (e.isNotFound()) {
+                log.debug("Document {} not found", id);
+                return Optional.empty();
+            }
+            throw e;
         }
     }
     // endregion
@@ -109,9 +112,12 @@ public class NotificationIndexService {
                     response.path("result").asString(),
                     response.path("_version").asLong());
             return true;
-        } catch (HttpClientErrorException.NotFound e) {
-            log.debug("Document {} not found.", id);
-            return false;
+        } catch (OpenSearchException e) {
+            if (e.isNotFound()) {
+                log.debug("Document {} not found", id);
+                return false;
+            }
+            throw e;
         }
     }
     // endregion

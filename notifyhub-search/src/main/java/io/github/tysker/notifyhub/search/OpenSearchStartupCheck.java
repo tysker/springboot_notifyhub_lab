@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -26,10 +27,17 @@ public class OpenSearchStartupCheck implements ApplicationRunner {
 
         // === Check OpenSearch connection ===
         //JsonNode root = openSearchRestClient.get().uri("/").retrieve().body(JsonNode.class);
-        String response = openSearchRestClient.get()
-                .uri("/")
-                .retrieve()
-                .body(String.class);
+        String response;
+        try {
+            response = openSearchRestClient.get()
+                    .uri("/")
+                    .retrieve()
+                    .body(String.class);
+        } catch (ResourceAccessException e) {
+            throw new IllegalStateException(
+                    "OpenSearch is not reachable at " + openSearchProperties.baseUrl()
+                            + " – is the container running? (docker compose ps)", e);
+        }
 
         // === Check OpenSearch cluster health ===
         String healthJson = openSearchRestClient.get()
