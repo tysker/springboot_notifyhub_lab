@@ -19,34 +19,18 @@ public class NotificationIndexDefinition {
     }
 
     public ObjectNode mappings() {
-        ObjectNode mappings = objectMapper.createObjectNode();
-        mappings.put("dynamic", "strict");
-
-        ObjectNode properties = mappings.putObject("properties");
-
-        properties.putObject("id").put("type", "keyword");
-        properties.putObject("channel").put("type", "keyword");
-        properties.putObject("recipient").put("type", "keyword");
-
-        ObjectNode subject = properties.putObject("subject");
-        subject.put("type", "text");
-        subject.putObject("fields")
-                .putObject("keyword")
-                .put("type", "keyword");
-
-        ObjectNode message = properties.putObject("message");
-        message.put("type", "text");
-        message.putObject("fields")
-                .putObject("keyword")
-                .put("type", "keyword");
-
-        properties.putObject("status").put("type", "keyword");
-        properties.putObject("retries").put("type", "integer");
-        properties.putObject("durationMs").put("type", "long");
-        properties.putObject("createdAt").put("type", "date");
-        properties.putObject("template").put("type", "keyword");
-
-        return mappings;
+        return MappingBuilder.strict(objectMapper)
+                .keyword("id")
+                .keyword("channel")
+                .keyword("recipient")
+                .textWithKeyword("subject")
+                .textWithKeyword("message")
+                .keyword("status")
+                .integer("retries")
+                .longField("durationMs")
+                .date("createdAt")
+                .keyword("template")
+                .build();
     }
 
     public ObjectNode createIndexBody() {
