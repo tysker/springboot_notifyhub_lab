@@ -91,5 +91,17 @@ public class IndexAdminService {
         log.info("Added alias '{}' to index '{}' -> acknowledged={}", alias, index, response.path("acknowledged").asBoolean());
     }
 
+    public JsonNode getMapping(String index) {
+        String responseJson = openSearchRestClient
+                .get()
+                .uri("/{index}/_mapping", index)
+                .retrieve()
+                .body(String.class);
+        log.debug("Retrieved mapping for index {}: {}", index, responseJson);
+
+        JsonNode response = objectMapper.readTree(responseJson).path(index).path("mappings");
+        return response.isMissingNode() ? objectMapper.createObjectNode() : response;
+    }
+
 
 }

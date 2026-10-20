@@ -30,6 +30,7 @@ public class NotificationIndexInitializer implements ApplicationRunner {
 
             if (indexAdminService.indexExists(index)) {
                 log.info("Index {} already exists", index);
+                log.info("Live mapping: {}", indexAdminService.getMapping(index));
             } else {
                 indexAdminService.createIndex(index, definition.createIndexBody());
             }
