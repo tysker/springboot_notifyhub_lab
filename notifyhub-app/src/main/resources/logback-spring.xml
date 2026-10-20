@@ -1,0 +1,37 @@
+<configuration>
+    <!-- Pulls in Spring Boot's defaults, including the %clr colour converter -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Your code: bright, coloured -->
+    <property name="APP_PATTERN"
+              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(%-40.40logger{39}){magenta} : %clr(%m){cyan}%n%wEx"/>
+
+    <!-- Third-party libraries: dimmed -->
+    <property name="LIB_PATTERN"
+              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(%-40.40logger{39}){faint} : %clr(%m){faint}%n%wEx"/>
+
+    <appender name="APP_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${APP_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="LIB_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LIB_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Your packages go to the coloured appender only -->
+    <!-- additivity="false" stops the logs from also being printed by the root appender, so we don’t get duplicates.-->
+    <logger name="io.github.tysker.notifyhub" level="DEBUG" additivity="false">
+        <appender-ref ref="APP_CONSOLE"/>
+    </logger>
+
+    <!-- Everything else -->
+    <root level="INFO">
+        <appender-ref ref="LIB_CONSOLE"/>
+    </root>
+</configuration>
