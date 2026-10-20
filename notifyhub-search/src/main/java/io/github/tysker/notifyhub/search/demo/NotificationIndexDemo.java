@@ -3,6 +3,7 @@ package io.github.tysker.notifyhub.search.demo;
 import io.github.tysker.notifyhub.search.document.NotificationChannel;
 import io.github.tysker.notifyhub.search.document.NotificationDocument;
 import io.github.tysker.notifyhub.search.document.NotificationStatus;
+import io.github.tysker.notifyhub.search.service.IndexAdminService;
 import io.github.tysker.notifyhub.search.service.NotificationIndexService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +17,13 @@ import java.time.Instant;
 import java.util.Optional;
 
 @Component
-@Order(2)
+@Order(3)
 @Slf4j
 @RequiredArgsConstructor
 public class NotificationIndexDemo implements ApplicationRunner {
 
     private final NotificationIndexService indexService;
+    private final IndexAdminService indexAdminService;
     private final RestClient openSearchRestClient;
 
 
@@ -31,13 +33,13 @@ public class NotificationIndexDemo implements ApplicationRunner {
 //            String id = index();
 //            String result = update(id, NotificationStatus.FAILED, 2);
 //            boolean ok = delete("a1b2c3d4-0000-4000-8000-000000000007");
-            NotificationDocument notificationDocument = findByID("1");
+//            NotificationDocument notificationDocument = findByID("1");
+//            indexAdminService.aliasTargets("notifications");
         } catch (Exception e) {
             log.error(e.getMessage());
         }
 
     }
-
 
     public String index() {
         NotificationDocument doc = NotificationDocument.builder()

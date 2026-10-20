@@ -10,6 +10,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class NotificationIndexDefinition {
 
     private final ObjectMapper objectMapper;
+    public static final int VERSION = 2;
 
     public ObjectNode settings() {
         ObjectNode settings = objectMapper.createObjectNode();

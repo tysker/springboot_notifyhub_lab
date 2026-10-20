@@ -11,3 +11,6 @@ POST notifications/_update_by_query
     "source": "ctx._source.channel = 'SLACK'; ctx._source.recipient = '#general'"
   }
 }
+
+# Status 200 means the index exists and is healthy. Status 404 means the index does not exist.
+HEAD notifications-v2
