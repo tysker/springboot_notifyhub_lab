@@ -2,6 +2,7 @@ package io.github.tysker.notifyhub.search.service;
 
 import io.github.tysker.notifyhub.search.config.OpenSearchProperties;
 import io.github.tysker.notifyhub.search.document.NotificationDocument;
+import io.github.tysker.notifyhub.search.document.NotificationStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -67,6 +69,30 @@ public class NotificationIndexService {
             return Optional.empty();
         }
     }
+    // endregion
+
+    // UPDATE Queries
+    public String updateStatus(String id, NotificationStatus status, int retries) {
+        ObjectNode body = objectMapper.createObjectNode();
+        ObjectNode doc = body.putObject("doc");
+        doc.put("status", status.name());
+        doc.put("retries", retries);
+
+        String json = objectMapper.writeValueAsString(body);
+        log.debug("Updating {}: {}", id, json);
+
+        String responseJson = openSearchRestClient.post()
+                .uri("/{alias}/_update/{id}", openSearchProperties.alias(), id)
+                .body(json)
+                .retrieve()
+                .body(String.class);
+
+        JsonNode response = objectMapper.readTree(responseJson);
+        String result = response.path("result").asString();
+        log.info("Updated {} -> result={}, version={}", id, result, response.path("_version").asLong());
+        return result;
+    }
+
     // endregion
 
     // region DELETE Queries
