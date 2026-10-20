@@ -22,6 +22,10 @@ public class MappingBuilder {
         return field(name, "keyword");
     }
 
+    public MappingBuilder text(String name) {
+        return field(name, "text");
+    }
+
     public MappingBuilder integer(String name) {
         return field(name, "integer");
     }

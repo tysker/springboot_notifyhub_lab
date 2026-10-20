@@ -10,12 +10,7 @@ class NotificationIndexDefinitionTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final NotificationIndexDefinition definition = new NotificationIndexDefinition(objectMapper);
-
-    @Test
-    void printBody() {
-        System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(definition.createIndexBody()));
-    }
-
+    
     @Test
     void mappingsMatchDevToolsVersion() {
         JsonNode expected = objectMapper.readTree("""
