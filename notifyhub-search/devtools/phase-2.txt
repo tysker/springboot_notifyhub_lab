@@ -1,0 +1,13 @@
+# Check OpenSearch cluster health
+GET _cluster/health
+
+# Update all documents in the `notifications` index where the `channel` is `PUSH` to change the `channel` to `SLACK` and set the `recipient` to `#general`.
+POST notifications/_update_by_query
+{
+  "query": {
+    "term": { "channel": "PUSH" }
+  },
+  "script": {
+    "source": "ctx._source.channel = 'SLACK'; ctx._source.recipient = '#general'"
+  }
+}

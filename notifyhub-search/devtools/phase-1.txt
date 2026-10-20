@@ -1,21 +1,32 @@
 # Get information about the root of the OpenSearch cluster
 GET /
+
 # Get information about the OpenSearch cluster
 GET _cat/health?v
+
 # Get information about the nodes in the cluster
 GET _cat/nodes?v
+
 # Get information about the indices in the cluster
 GET _cat/indices?v
+
 # Get information about the aliases in the cluster
 GET _cat/aliases?v
+GET _alias/notifications
+GET _cat/aliases/notifications?format=json
+
 # Get information about all indices that start with "notifications-"
 GET _cat/indices/notifications-?v
+
 # Get information about the shards in the cluster
 GET _cat/shards/notifications?v
+
 # Get the mapping of the notifications-v1 index
 GET notifications-v1/_mapping
+
 # Get the document count of the notifications index
 GET notifications/_count
+
 # Analyze the text "Payment failed" using the subject field of the notifications index
 GET notifications/_analyze
 {
@@ -27,6 +38,7 @@ GET notifications/_analyze
   "field": "subject.keyword",
   "text": "Payment failed"
 }
+
 # Re-index the notifications index after changing the mapping
 POST notifications/_update_by_query
 
