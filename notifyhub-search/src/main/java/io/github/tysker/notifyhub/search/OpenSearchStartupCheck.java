@@ -34,9 +34,12 @@ public class OpenSearchStartupCheck implements ApplicationRunner {
                     .retrieve()
                     .body(String.class);
         } catch (ResourceAccessException e) {
-            throw new IllegalStateException(
-                    "OpenSearch is not reachable at " + openSearchProperties.baseUrl()
-                            + " – is the container running? (docker compose ps)", e);
+            String errorMessage = "OpenSearch is not reachable at " + openSearchProperties.baseUrl() + " – is the container running? (docker compose ps)";
+            if (openSearchProperties.failOnStartup()) {
+                throw new IllegalStateException(errorMessage, e);
+            }
+            log.warn(errorMessage, e);
+            return;
         }
 
         // === Check OpenSearch cluster health ===
