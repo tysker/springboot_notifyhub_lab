@@ -22,7 +22,7 @@ public class NotificationIndexService {
     private final ObjectMapper objectMapper;
     private final OpenSearchProperties openSearchProperties;
 
-    // region Indexing
+    // region INDEXING
     public String index(NotificationDocument document) {
         if (document.getId() == null) {
             document.setId(UUID.randomUUID().toString());
@@ -65,6 +65,27 @@ public class NotificationIndexService {
         } catch (HttpClientErrorException.NotFound e) {
             log.debug("Document {} not found", id);
             return Optional.empty();
+        }
+    }
+    // endregion
+
+    // region DELETE Queries
+    public boolean deleteById(String id) {
+        try {
+            String responseJson = openSearchRestClient
+                    .delete()
+                    .uri("/{alias}/_doc/{id}", openSearchProperties.alias(), id)
+                    .retrieve()
+                    .body(String.class);
+            JsonNode response = objectMapper.readTree(responseJson);
+            log.debug("Document {} deleted -> result={}, version={}",
+                    id,
+                    response.path("result").asString(),
+                    response.path("_version").asLong());
+            return true;
+        } catch (HttpClientErrorException.NotFound e) {
+            log.debug("Document {} not found.", id);
+            return false;
         }
     }
     // endregion
