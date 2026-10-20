@@ -27,17 +27,17 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 - [x] Alias, `_reindex` v1 → v2, atomic alias switch, rollback
 - [ ] Analyzers (custom analyzer) – revisit in Phase 6
 
-## Phase 2 – Talking to OpenSearch from Spring Boot
+## Phase 2 – Talking to OpenSearch from Spring Boot ✅
 
-- [ ] REST client configured via `@Configuration` / `@Bean` + `application.yml`
-- [ ] Sending and receiving JSON (Jackson + Lombok classes)
-- [ ] Error handling: 404, 400 mapping errors, connection failures
-- [ ] UUID as document `_id`
+- [x] REST client configured via `@Configuration` / `@Bean` + `application.properties`
+- [x] Sending and receiving JSON (Jackson 3 `ObjectMapper` / `JsonNode` + Lombok classes)
+- [x] Error handling: 404, 400 mapping errors, connection failures (`OpenSearchException`, `fail-on-startup`)
+- [x] UUID as document `_id`
 
 ## Phase 3 – Mappings as Java classes
 
-- [ ] Java classes that build the mapping JSON with Jackson `ObjectMapper` + `ObjectNode`
-- [ ] Index-creation service that applies mappings on startup
+- [x] Java classes that build the mapping JSON with Jackson `ObjectMapper` + `ObjectNode` (`MappingBuilder`)
+- [x] Index-creation service that applies mappings on startup (`NotificationIndexInitializer`)
 - [ ] Check if index exists / if mapping matches
 
 ## Phase 4 – Postgres as source of truth for setup
@@ -75,10 +75,17 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 
 ## Phase 8 – Index management
 
+Two different reasons for a new index – both handled with aliases:
+
+- **Versioning**: the mapping changes → new index, reindex, switch the alias
+- **Rollover** (used at work): same mapping, index too big/old → alias spans several indices, writes go to the newest
+
 - [ ] Alias switch from Java (Phase 1 did it by hand)
-- [ ] Index templates
-- [ ] Time-based indices (`notifications-2026.10`)
 - [ ] Zero-downtime reindex incl. writes that arrive during the copy
+- [ ] Index templates (`notifications-*` gets the mapping automatically)
+- [ ] Rollover by hand: `POST <alias>/_rollover`, conditions (`max_age`, `max_docs`, `max_size`), `-000001` naming
+- [ ] One alias over several indices: search all, write to `is_write_index`
+- [ ] ISM (Index State Management) policy: automatic rollover + delete old indices
 - [ ] `_update_by_query`, `_delete_by_query`
 
 ## Phase 9 – Quality
