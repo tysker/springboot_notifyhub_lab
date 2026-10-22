@@ -1,9 +1,9 @@
 package io.github.tysker.notifyhub.search.metadata;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -35,5 +35,16 @@ public class IndexDefinitionService {
                     log.info("Stored index definition {} v{} (id={})", alias, version, saved.getId());
                     return saved;
                 });
+    }
+
+    public ObjectNode mappingsOf(IndexDefinitionEntity entity) {
+        objectMapper.readTree(entity.getMappings());
+        return objectMapper.createObjectNode();
+    }
+
+    public ObjectNode createIndexBody(IndexDefinitionEntity entity) {
+        objectMapper.readTree(entity.getSettings());
+        objectMapper.readTree(entity.getMappings());
+        return objectMapper.createObjectNode();
     }
 }

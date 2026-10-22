@@ -1,6 +1,7 @@
 package io.github.tysker.notifyhub.search.mapping;
 
 import io.github.tysker.notifyhub.search.config.OpenSearchProperties;
+import io.github.tysker.notifyhub.search.metadata.IndexDefinitionEntity;
 import io.github.tysker.notifyhub.search.metadata.IndexDefinitionService;
 import io.github.tysker.notifyhub.search.service.IndexAdminService;
 import lombok.RequiredArgsConstructor;
@@ -30,21 +31,21 @@ public class NotificationIndexInitializer implements ApplicationRunner {
             String alias = openSearchProperties.alias();
             String index = alias + "-v" + NotificationIndexDefinition.VERSION;
 
+            // -- To enure that index definition is already stored
+            IndexDefinitionEntity stored = indexDefinitionService.ensureStored(alias, NotificationIndexDefinition.VERSION, definition.settings(), definition.mappings());
+
             // -- Create index if it doesn't exist --
             if (indexAdminService.indexExists(index)) {
                 log.info("Index {} already exists", index);
             } else {
-                indexAdminService.createIndex(index, definition.createIndexBody());
+                indexAdminService.createIndex(index, indexDefinitionService.createIndexBody(stored));
             }
-
-            // -- To enure that index definition is already stored
-            indexDefinitionService.ensureStored(alias, NotificationIndexDefinition.VERSION, definition.settings(), definition.mappings());
 
             // -- Ensure the mapping is up to date --
             indexAdminService.getMapping(index).ifPresentOrElse(
                     existingMapping -> {
-                        if (!existingMapping.equals(definition.mappings())) {
-                            log.warn("Mapping of {} differs from the Java definition – live: {}, expected: {}", index, existingMapping, definition.mappings());
+                        if (!existingMapping.equals(indexDefinitionService.mappingsOf(stored))) {
+                            log.warn("Mapping of {} differs from the db stored definition – live: {}, expected: {}", index, existingMapping, definition.mappings());
                         } else {
                             log.info("Mapping of {} matches the Java definition", index);
                         }
