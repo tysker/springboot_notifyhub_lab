@@ -1,6 +1,7 @@
 package io.github.tysker.notifyhub.search.mapping;
 
 import io.github.tysker.notifyhub.search.config.OpenSearchProperties;
+import io.github.tysker.notifyhub.search.metadata.IndexDefinitionService;
 import io.github.tysker.notifyhub.search.service.IndexAdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.util.Set;
 public class NotificationIndexInitializer implements ApplicationRunner {
 
     private final IndexAdminService indexAdminService;
+    private final IndexDefinitionService indexDefinitionService;
     private final NotificationIndexDefinition definition;
     private final OpenSearchProperties openSearchProperties;
 
@@ -34,6 +36,9 @@ public class NotificationIndexInitializer implements ApplicationRunner {
             } else {
                 indexAdminService.createIndex(index, definition.createIndexBody());
             }
+
+            // -- To enure that index definition is already stored
+            indexDefinitionService.ensureStored(alias, NotificationIndexDefinition.VERSION, definition.settings(), definition.mappings());
 
             // -- Ensure the mapping is up to date --
             indexAdminService.getMapping(index).ifPresentOrElse(
