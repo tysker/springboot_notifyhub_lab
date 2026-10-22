@@ -36,7 +36,7 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 - [x] Error handling: 404, 400 mapping errors, connection failures (`OpenSearchException`, `fail-on-startup`)
 - [x] UUID as document `_id`
 
-## Phase 3 – Mappings as Java classes
+## Phase 3 – Mappings as Java classes ✅
 
 - [x] Java classes that build the mapping JSON with Jackson `ObjectMapper` + `ObjectNode` (`MappingBuilder`)
 - [x] Index-creation service that applies mappings on startup (`NotificationIndexInitializer`)
@@ -45,12 +45,17 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 ## Phase 4 – Postgres as source of truth for setup
 
 - [x] Connect to Postgres (Spring Data JPA + Hikari)
-- [ ] Table(s) for index metadata: alias, version, settings, mappings, created date (Flyway migration)
+- [x] Table for index metadata: alias, version, settings, mappings, created date (Flyway migration `V1`)
+- [x] JPA entity + repository, `ddl-auto=validate`
+- [x] Store the Java definition in Postgres on startup (`IndexDefinitionService.ensureStored`)
+- [ ] Initializer reads the definition from Postgres instead of Java
 - [ ] "Rebuild" feature: OpenSearch wiped → re-apply everything from Postgres
 - [ ] Mapping versioning (v1 → v2)
 
 ## Phase 5 – Indexing data
 
+- [ ] `nested` field `attempts` (channel, status, durationMs, attemptedAt) – filled by the fallback logic, like at work
+- [ ] Mapping change for real: v2 → v3, `_reindex`, alias switch, new row in Postgres
 - [ ] Index notifications when notifyhub sends them
 - [ ] Data generator (thousands of test documents)
 - [ ] Bulk indexing from Java + handling partial failures
@@ -59,6 +64,7 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 
 - [ ] `match`, `match_phrase`, `multi_match`
 - [ ] `term`, `terms`, `range`, `exists`
+- [ ] `nested` query on `attempts`
 - [ ] `bool`: `must`, `filter`, `should`, `must_not` (query vs filter context)
 - [ ] Sorting, pagination (`from`/`size`), later `search_after`
 - [ ] Highlighting, fuzzy search
@@ -70,7 +76,8 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 ## Phase 7 – Aggregations
 
 - [ ] `terms` aggregation
-- [ ] Nested aggregations (e.g. level per service)
+- [ ] Sub-aggregations (e.g. status per channel, channel per day)
+- [ ] `nested` aggregation on `attempts` (+ `reverse_nested`)
 - [ ] `filter` / `filters` aggregations
 - [ ] `date_histogram`
 - [ ] Metrics: `avg`, `min`, `max`, `sum`, `percentiles`, `cardinality`
@@ -103,3 +110,4 @@ Two different reasons for a new index – both handled with aliases:
 ## Later (not now)
 
 - [ ] Keycloak – securing the notifyhub REST endpoints
+- [ ] RabbitMQ – notifyhub publishes a "notification sent" event, a consumer indexes it into OpenSearch (like at work)
