@@ -23,7 +23,7 @@ public class OpenSearchStartupCheck implements ApplicationRunner {
     private final OpenSearchProperties openSearchProperties;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
 
         // === Check OpenSearch connection ===
         //JsonNode root = openSearchRestClient.get().uri("/").retrieve().body(JsonNode.class);
@@ -48,12 +48,6 @@ public class OpenSearchStartupCheck implements ApplicationRunner {
                 .retrieve()
                 .body(String.class);
 
-        // === Check OpenSearch alias existence ===
-        String aliasJson = openSearchRestClient.get()
-                .uri("/_alias/{alias}", openSearchProperties.alias())
-                .retrieve()
-                .body(String.class);
-
         // === Parse and log the responses ===
 
         // Parse the root response to get cluster name and version
@@ -70,12 +64,6 @@ public class OpenSearchStartupCheck implements ApplicationRunner {
             log.info("Cluster health: {} ({} node)", status, nodes);
         } else {
             log.warn("Cluster health is {} – check replicas/shards", status);
-        }
-
-        // Parse the alias response to get the index names
-        JsonNode aliasRoot = objectMapper.readTree(aliasJson);
-        for (String indexName : aliasRoot.propertyNames()) {
-            log.info("Alias '{}' points to index '{}'", openSearchProperties.alias(), indexName);
         }
     }
 }
