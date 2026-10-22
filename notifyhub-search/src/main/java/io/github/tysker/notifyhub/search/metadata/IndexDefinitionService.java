@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -38,13 +39,12 @@ public class IndexDefinitionService {
     }
 
     public ObjectNode mappingsOf(IndexDefinitionEntity entity) {
-        objectMapper.readTree(entity.getMappings());
-        return objectMapper.createObjectNode();
+        return objectMapper.readTree(entity.getMappings()).asObject();
     }
 
     public ObjectNode createIndexBody(IndexDefinitionEntity entity) {
-        objectMapper.readTree(entity.getSettings());
-        objectMapper.readTree(entity.getMappings());
-        return objectMapper.createObjectNode();
+        JsonNode settings = objectMapper.readTree(entity.getSettings());
+        JsonNode mappings = objectMapper.readTree(entity.getMappings());
+        return objectMapper.createObjectNode().set("settings", settings).set("mappings", mappings);
     }
 }
