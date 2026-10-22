@@ -3,6 +3,8 @@
 Focus: OpenSearch. Spring Boot is the vehicle, not the goal.
 Each checkbox can become its own branch.
 
+Constraint: work runs Spring Boot 2.x, so no high-level OpenSearch library – requests and responses are own DTO classes.
+
 Stack (mirrors work): OpenSearch, OpenSearch Dashboards + Dev Tools, Spring Boot, Lombok, UUID,
 REST client + JSON, Java classes that build mappings, Postgres for index metadata.
 
@@ -38,12 +40,12 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 
 - [x] Java classes that build the mapping JSON with Jackson `ObjectMapper` + `ObjectNode` (`MappingBuilder`)
 - [x] Index-creation service that applies mappings on startup (`NotificationIndexInitializer`)
-- [ ] Check if index exists / if mapping matches
+- [x] Check if index exists / if mapping matches
 
 ## Phase 4 – Postgres as source of truth for setup
 
-- [ ] Table(s) for index metadata: name, mapping JSON, version, created date
-- [ ] Spring Data JPA (or JDBC) with Postgres
+- [x] Connect to Postgres (Spring Data JPA + Hikari)
+- [ ] Table(s) for index metadata: alias, version, settings, mappings, created date (Flyway migration)
 - [ ] "Rebuild" feature: OpenSearch wiped → re-apply everything from Postgres
 - [ ] Mapping versioning (v1 → v2)
 
@@ -60,6 +62,8 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 - [ ] `bool`: `must`, `filter`, `should`, `must_not` (query vs filter context)
 - [ ] Sorting, pagination (`from`/`size`), later `search_after`
 - [ ] Highlighting, fuzzy search
+- [ ] Own query DTO classes (`Term`, `Terms`, `Match`, `Bool`) – no high-level OpenSearch client, like at work (Spring
+  Boot 2.x)
 - [ ] Queries built as Java classes (`ObjectNode`) → search REST endpoint
 - [ ] Reading responses with `ObjectMapper` (`JsonNode` → hits, aggregations)
 
@@ -71,6 +75,7 @@ REST client + JSON, Java classes that build mappings, Postgres for index metadat
 - [ ] `date_histogram`
 - [ ] Metrics: `avg`, `min`, `max`, `sum`, `percentiles`, `cardinality`
 - [ ] Query + aggregations together, `size: 0`
+- [ ] Own response DTO classes (`Bucket`, aggregation results) mapped from `JsonNode`
 - [ ] Stats REST endpoint
 
 ## Phase 8 – Index management
